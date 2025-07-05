@@ -11,7 +11,6 @@ mongoose.connect(mongoURL);
 const db = mongoose.connection;
 
 //Define event liestenrs for the database connection 
-
 // Listen for events
 db.on("connected", () => console.log("✅ MongoDB connected"));
 db.on("error", (err) => console.error("❌ MongoDB error:", err));
@@ -23,4 +22,3 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-export default db;
