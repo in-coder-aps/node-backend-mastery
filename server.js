@@ -1,11 +1,14 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import bodyParser from 'body-parser';
 import './db.js';
 import express from 'express';
 import personRoutes from './routes/personRoutes.js';
-import menuRoutes from './routes/menuRoutes.js'
+import menuRoutes from './routes/menuRoutes.js';
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
