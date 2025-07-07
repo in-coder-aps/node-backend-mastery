@@ -1,18 +1,18 @@
 import express from 'express'
 import { Person } from '../models/person.js';
 
-const router =express.Router();
+const router = express.Router();
 
 //GET method to get all the person details
-router.get('/',async (req,res)=>{
-   try {
-     const data =await Person.find();
-     res.status(200).json(data);
-     console.log("✅ Person's Data fetched succesfully!");
-   } catch (error) {
-      console.error('❌ Error saving person details:', error);
-      res.status(500).json({ error: 'Internal server error!!' });
-   }
+router.get('/', async (req, res) => {
+  try {
+    const data = await Person.find();
+    res.status(200).json(data);
+    console.log("✅ Person's Data fetched succesfully!");
+  } catch (error) {
+    console.error('❌ Error saving person details:', error);
+    res.status(500).json({ error: 'Internal server error!!' });
+  }
 });
 
 
@@ -32,18 +32,18 @@ router.get('/:work', async (req, res) => {
 
 //Post route to add a person
 router.post('/', async (req, res) => {
-    try {
-        const newPersonData = req.body;
-        const newPerson = new Person(newPersonData);
-        // Save the new person to the database using await
-        const savedPerson = await newPerson.save();
+  try {
+    const newPersonData = req.body;
+    const newPerson = new Person(newPersonData);
+    // Save the new person to the database using await
+    const savedPerson = await newPerson.save();
 
-        console.log('✅ Saved person to the database');
-        res.status(201).json(savedPerson);
-    } catch (error) {
-        console.error('❌ Error saving person details:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+    console.log('✅ Saved person to the database');
+    res.status(201).json(savedPerson);
+  } catch (error) {
+    console.error('❌ Error saving person details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 router.put('/:id', async (req, res) => {
@@ -85,7 +85,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 export default router;
