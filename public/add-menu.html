@@ -1,0 +1,23 @@
+<!-- public/add-menu.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Menu Item - Data Kitchen</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <h2>➕ Add Menu Item</h2>
+  <form id="addMenuForm">
+    <input type="text" name="name" placeholder="Item Name" required /><br />
+    <input type="number" name="price" placeholder="Price" required /><br />
+    <input type="text" name="taste" placeholder="Taste (Sweet/Spicy/Neutral/Sour)" /><br />
+    <input type="checkbox" name="is_drink" /> Is Drink?<br />
+    <input type="text" name="ingredients" placeholder="Ingredients (comma-separated)" /><br />
+    <button type="submit">Add Item</button>
+  </form>
+  <p><a href="/menu.html">📋 Back to Menu</a></p>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

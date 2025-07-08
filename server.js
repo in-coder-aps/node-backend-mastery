@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 // const basicAuthMiddleware = passport.authenticate('basic', { session: false });
 
+app.use(express.static('public'));
 app.use('/person', personRoutes);
 app.use('/menu', menuRoutes);
 

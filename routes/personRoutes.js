@@ -16,6 +16,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+//Profile route
+router.get('/profile', jwtAuthMiddleware,(req, res, next) => {
+  console.log('Profile route hit');
+  next();
+}, async (req, res) => {
+  try {
+    console.log('Profile route hit');
+    const userData = req.user;
+
+    const userId = userData.id;
+    const user = await Person.findById(userId);
+    res.status(200).json({ user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal Server Error!' });
+  }
+});
+
 router.get('/:work', async (req, res) => {
   try {
     const workType = req.params.work; // Extract the work type from the URL parameter
@@ -26,20 +44,6 @@ router.get('/:work', async (req, res) => {
   } catch (error) {
     console.error('❌ Error fetching persons:', error);
     res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-//Profile route
-router.get('/profile', jwtAuthMiddleware, async (req, res) => {
-  try {
-    const userData = req.user;
-
-    const userId = userData.id;
-    const user = await Person.findById(userId);
-    res.status(200).json({ user });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: 'Internal Server Error!' });
   }
 });
 
