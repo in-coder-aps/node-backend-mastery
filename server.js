@@ -1,12 +1,13 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import bodyParser from 'body-parser';
-import './db.js';
 import express from 'express';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+
+import './db.js';
 import personRoutes from './routes/personRoutes.js';
 import menuRoutes from './routes/menuRoutes.js';
-import passport from './auth.js';
+import passport from './middlewares/basicAuth.js';
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,9 +21,9 @@ const logRequest = (req, res, next) => {
 app.use(logRequest);
 app.use(bodyParser.json());
 app.use(passport.initialize());
-const basicAuthMiddleware = passport.authenticate('basic', { session: false });
+// const basicAuthMiddleware = passport.authenticate('basic', { session: false });
 
-app.use('/person', basicAuthMiddleware, personRoutes);
+app.use('/person', personRoutes);
 app.use('/menu', menuRoutes);
 
 app.get('/', (req, res) => {

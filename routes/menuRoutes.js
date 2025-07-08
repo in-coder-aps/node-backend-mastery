@@ -1,12 +1,12 @@
 import express from 'express';
 import { MenuItem } from '../models/menuItem.js';
-import passport from '../auth.js';
+import { jwtAuthMiddleware, authorizeRoles } from '../middlewares/index.js';
 
 const router = express.Router();
-const basicAuthMiddleware = passport.authenticate('basic', { session: false });
+// const basicAuthMiddleware = passport.authenticate('basic', { session: false });
 
 //GET method to get all the menu items list
-router.get('/', async (req, res) => {
+router.get('/',jwtAuthMiddleware, async (req, res) => {
   try {
     const data = await MenuItem.find();
     res.status(200).json(data);
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 //GET method to get the menu items based on taste
-router.get('/:taste', async (req, res) => {
+router.get('/:taste',jwtAuthMiddleware, async (req, res) => {
   try {
     const tasteType = req.params.taste; // Extract the taste type from the URL parameter
     const menuList = await MenuItem.find({ taste: tasteType });
@@ -32,7 +32,7 @@ router.get('/:taste', async (req, res) => {
 });
 
 //Post route to add a menu item
-router.post('/', basicAuthMiddleware, async (req, res) => {
+router.post('/',jwtAuthMiddleware, authorizeRoles('chef', 'manager'), async (req, res) => {
   try {
     const newMenuData = req.body;
     const newItem = new MenuItem(newMenuData);
@@ -48,7 +48,7 @@ router.post('/', basicAuthMiddleware, async (req, res) => {
 });
 
 //For updating any items
-router.put('/:id', basicAuthMiddleware, async (req, res) => {
+router.put('/:id', jwtAuthMiddleware, authorizeRoles('chef', 'manager'), async (req, res) => {
   try {
     const itemId = req.params.id; // Extract the item's ID from the URL parameter
     const updatedItemData = req.body; // Updated data for the item
@@ -70,7 +70,7 @@ router.put('/:id', basicAuthMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:id', basicAuthMiddleware, async (req, res) => {
+router.delete('/:id', jwtAuthMiddleware, authorizeRoles('manager'), async (req, res) => {
   try {
     const itemId = req.params.id; // Extract the item's ID from the URL parameter
 

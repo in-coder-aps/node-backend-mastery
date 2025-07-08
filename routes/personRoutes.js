@@ -1,5 +1,6 @@
-import express from 'express'
+import express from 'express';
 import { Person } from '../models/person.js';
+import { jwtAuthMiddleware, generateToken, authorizeRoles } from '../middlewares/index.js';
 
 const router = express.Router();
 
@@ -15,7 +16,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-
 router.get('/:work', async (req, res) => {
   try {
     const workType = req.params.work; // Extract the work type from the URL parameter
@@ -29,9 +29,23 @@ router.get('/:work', async (req, res) => {
   }
 });
 
+//Profile route
+router.get('/profile', jwtAuthMiddleware, async (req, res) => {
+  try {
+    const userData = req.user;
+
+    const userId = userData.id;
+    const user = await Person.findById(userId);
+    res.status(200).json({ user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal Server Error!' });
+  }
+});
+
 
 //Post route to add a person
-router.post('/', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     const newPersonData = req.body;
     const newPerson = new Person(newPersonData);
@@ -39,14 +53,51 @@ router.post('/', async (req, res) => {
     const savedPerson = await newPerson.save();
 
     console.log('✅ Saved person to the database');
-    res.status(201).json(savedPerson);
+
+    const payload = {
+      id: savedPerson.id,
+      username: savedPerson.username,
+      work: savedPerson.work
+    }
+    const token = generateToken(payload)
+    console.log("Token is: ", token);
+
+    res.status(201).json({ response: savedPerson, token: token });
   } catch (error) {
     console.error('❌ Error saving person details:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-router.put('/:id', async (req, res) => {
+//Login Route
+router.post('/login', async (req, res) => {
+  try {
+    //Extract username and password from requst body
+    const { username, password } = req.body;
+
+    //Find the user by username
+    const user = await Person.findOne({ username: username });
+
+    //If user does not exists or password does not match, return error
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    //generate token
+    const payload = {
+      id: user.id,
+      username: user.username,
+      work: user.work
+    }
+    const token = generateToken(payload);
+    res.json({ token });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.put('/:id',jwtAuthMiddleware, authorizeRoles('manager'), async (req, res) => {
   try {
     const personId = req.params.id; // Extract the person's ID from the URL parameter
     const updatedPersonData = req.body; // Updated data for the person
@@ -68,7 +119,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', jwtAuthMiddleware, authorizeRoles('manager'), async (req, res) => {
   try {
     const personId = req.params.id; // Extract the person's ID from the URL parameter
 

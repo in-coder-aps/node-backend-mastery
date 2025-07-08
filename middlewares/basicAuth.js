@@ -1,8 +1,8 @@
 import passport from 'passport';
-import { Person } from './models/person.js';
+import { Person } from '../models/person.js';
 import { BasicStrategy } from 'passport-http';
 
-passport.use(new BasicStrategy(async (username, password, done) => {
+export default passport.use(new BasicStrategy(async (username, password, done) => {
     try {
         const user = await Person.findOne({ username });
         if (!user) return done(null, false, { message: 'Incorrect username' });
@@ -13,5 +13,3 @@ passport.use(new BasicStrategy(async (username, password, done) => {
         return done(error);
     }
 }));
-
-export default passport;
